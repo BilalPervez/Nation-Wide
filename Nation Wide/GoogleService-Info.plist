@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>841052367137-trq3m5v5sthi6do5m7mfohg83i79ch72.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.841052367137-trq3m5v5sthi6do5m7mfohg83i79ch72</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>841052367137-doth9npns9lapogqomq95nr3m1shfhtm.apps.googleusercontent.com</string>
+	<key>API_KEY</key>
+	<string>AIzaSyAtrjbrlE8qgL4lWbqsdM3hDEfWcmu1B5c</string>
+	<key>GCM_SENDER_ID</key>
+	<string>841052367137</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.ntw.investigations</string>
+	<key>PROJECT_ID</key>
+	<string>nationwidesecurity-f0301</string>
+	<key>STORAGE_BUCKET</key>
+	<string>nationwidesecurity-f0301.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:841052367137:ios:ed1c8cf0e02077c145b660</string>
+	<key>DATABASE_URL</key>
+	<string>https://nationwidesecurity-f0301-default-rtdb.firebaseio.com</string>
+</dict>
+</plist>
