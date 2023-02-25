@@ -94,8 +94,8 @@ struct SiteDetail : Codable {
     let start_date : String?
     let end_date : String?
     let gaurd_type : String?
-    let starting_time : [String]?
-    let ending_time : [String]?
+    let starting_time : [String?]?
+    let ending_time : [String?]?
     let job : Job?
 
     enum CodingKeys: String, CodingKey {
@@ -117,9 +117,11 @@ struct SiteDetail : Codable {
         start_date = try values.decodeIfPresent(String.self, forKey: .start_date)
         end_date = try values.decodeIfPresent(String.self, forKey: .end_date)
         gaurd_type = try values.decodeIfPresent(String.self, forKey: .gaurd_type)
-        starting_time = try values.decodeIfPresent([String].self, forKey: .starting_time)
-        ending_time = try values.decodeIfPresent([String].self, forKey: .ending_time)
+        starting_time = try values.decodeIfPresent([String?].self, forKey: .starting_time)
+        ending_time = try values.decodeIfPresent([String?].self, forKey: .ending_time)
         job = try values.decodeIfPresent(Job.self, forKey: .job)
     }
 
 }
+
+

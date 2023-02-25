@@ -10,10 +10,11 @@ import SideMenu
 import KRProgressHUD
 import Alamofire
 
+
 class ProfileViewController: UIViewController {
 
     
-    @IBOutlet weak var userImage: UIImageView!
+    @IBOutlet weak var userImage: CircularImageView!
     @IBOutlet weak var userName: UILabel!
     @IBOutlet weak var totalHours: UILabel!
     @IBOutlet weak var totalJobs: UILabel!
@@ -27,11 +28,12 @@ class ProfileViewController: UIViewController {
     var name = ""
     var cellNumberFromUserDefaults = ""
     
-    var jobId = 0
+    var shiftId = 0
     var activeSiteFromDefaults = ""
     var siteAddressFromDefaults = ""
     
     var historyDetails : HistoryDetails?
+    var currentUser: UserData?
 
     var sideMenu: SideMenuNavigationController?
     override func viewDidLoad() {
@@ -44,13 +46,38 @@ class ProfileViewController: UIViewController {
         
     }
     
+    
+    func getData(from url: URL, completion: @escaping (Data?, URLResponse?, Error?) -> ()) {
+        URLSession.shared.dataTask(with: url, completionHandler: completion).resume()
+    }
+    
     func fetchUserFromDefaults() {
         if let userData = UserDefaults.standard.object(forKey: "user") as? Data {
             let decoder = JSONDecoder()
             if let loadedPerson = try? decoder.decode(UserData.self, from: userData) {
+                self.currentUser = loadedPerson
                 self.token = loadedPerson.token ?? ""
-                self.name = "\(loadedPerson.user?.first_name ?? "")\(loadedPerson.user?.last_name ?? "")"
+                self.name = "\(loadedPerson.user?.first_name ?? "") \(loadedPerson.user?.last_name ?? "")"
                 self.cellNumberFromUserDefaults = loadedPerson.user?.phone ?? ""
+                
+//                let image = UIImageView()
+//                image.frame = CGRect.init(x: 70, y: -10, width: 100, height: 100)
+                if let avatar = loadedPerson.user?.avatar_url {
+                        
+                    let url = URL(string: avatar)
+                    getData(from: url!) { data, response, error in
+                            guard let data = data, error == nil else { return }
+                            print("Download Finished")
+                            // always update the UI from the main thread
+                            DispatchQueue.main.async() { [weak self] in
+                                self?.userImage.image = UIImage(data: data)
+                            }
+                        }
+                    
+                }else{
+                    userImage.image = UIImage(systemName: "camera.fill")
+                }
+                
             }
         }
     }
@@ -59,7 +86,7 @@ class ProfileViewController: UIViewController {
         if let siteDetail = UserDefaults.standard.object(forKey: "siteDetail") as? Data {
             let decoder = JSONDecoder()
             if let siteDetail = try? decoder.decode(SiteDetail.self, from: siteDetail) {
-                self.jobId = siteDetail.job_id ?? 0
+                self.shiftId = siteDetail.shift_id ?? 0
                 self.siteAddressFromDefaults = siteDetail.job?.poc_address ?? ""
                 self.activeSiteFromDefaults = siteDetail.job?.site_name ?? ""
             }
@@ -73,7 +100,10 @@ class ProfileViewController: UIViewController {
             self.cellNumber.text = self.cellNumberFromUserDefaults
             
             self.totalEarnings.text = "\(self.historyDetails?.total_earnings ?? 0)"
-            self.totalHours.text = "\(self.historyDetails?.total_hours ?? 0)"
+            
+            let roundedNumber = round(10 * (self.historyDetails?.total_hours ?? 0)) / 10 // rounds to one decimal point
+            self.totalHours.text = "\(roundedNumber)"
+//            self.totalHours.text = "\(self.historyDetails?.total_hours ?? 0)"
             self.totalJobs.text = "\(self.historyDetails?.total_jobs ?? 0)"
             
             self.siteAddress.text = self.siteAddressFromDefaults
@@ -83,8 +113,8 @@ class ProfileViewController: UIViewController {
             self.navigationItem.hidesBackButton = true
             self.navigationController?.navigationBar.backgroundColor = UIColor.white
             
-            let notificationBarButton = UIBarButtonItem(image: UIImage(systemName: "bell.fill"), style: .done, target: self, action: #selector(self.notificationButtonPressed))
-            self.navigationItem.rightBarButtonItem  = notificationBarButton
+//            let notificationBarButton = UIBarButtonItem(image: UIImage(systemName: "bell.fill"), style: .done, target: self, action: #selector(self.notificationButtonPressed))
+//            self.navigationItem.rightBarButtonItem  = notificationBarButton
             
             let sideMenuBarButton = UIBarButtonItem(image: UIImage(systemName: "line.horizontal.3"), style: .done, target: self, action: #selector(self.sideMenuButtonPressed))
             self.navigationItem.leftBarButtonItem = sideMenuBarButton
@@ -130,29 +160,57 @@ class ProfileViewController: UIViewController {
         
     }
 
+    @IBAction func didUploadImageAction(_ sender: UIButton) {
+        
+        showBottomSheet()
+    }
+    
+    
+    func showBottomSheet() {
+        let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+
+        let cameraAction = UIAlertAction(title: "Camera", style: .default) { _ in
+            // Code to open the camera
+            self.openCamera()
+        }
+
+        let galleryAction = UIAlertAction(title: "Gallery", style: .default) { _ in
+            // Code to open the gallery
+            self.openGallery()
+        }
+
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+
+        alertController.addAction(cameraAction)
+        alertController.addAction(galleryAction)
+        alertController.addAction(cancelAction)
+
+        present(alertController, animated: true, completion: nil)
+    }
+    
 }
 
-extension ProfileViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
-    
-    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
-        picker.dismiss(animated: true, completion: nil)
-    }
-    
-    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-        picker.dismiss(animated: true, completion: nil)
-        
-        guard let image = info[UIImagePickerController.InfoKey.editedImage] as? UIImage else {
-            return
-        }
-        
-        emergencyImageUploadRequest(imageToUpload: image, imgKey: "emergencyImage")
-        
-        
-        
-        
-    }
-    
-}
+//extension ProfileViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+//
+//    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+//        picker.dismiss(animated: true, completion: nil)
+//    }
+//
+//    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+//        picker.dismiss(animated: true, completion: nil)
+//
+//        guard let image = info[UIImagePickerController.InfoKey.editedImage] as? UIImage else {
+//            return
+//        }
+//
+//
+//
+//
+//
+//
+//    }
+//
+//}
 
 
 
@@ -164,7 +222,7 @@ extension ProfileViewController {
     
     
     
-    func emergencyImageUploadRequest(imageToUpload: UIImage, imgKey: String) {
+    func avatarImageUploadRequest(imageToUpload: UIImage, imgKey: String) {
 
         KRProgressHUD.show()
         
@@ -176,8 +234,8 @@ extension ProfileViewController {
         request.setValue( "Bearer \(token)", forHTTPHeaderField: "Authorization")
 
         let param = [
-            "job_id"  : "\(self.jobId ?? 0)",
-            "reason"    : "emergency"
+            "shift_id"  : "\(self.shiftId ?? 0)",
+            "reason"    : "avatar"
         ]
 
         let boundary = generateBoundaryString()
@@ -202,9 +260,49 @@ extension ProfileViewController {
                     
                     return
                 }
-                let responseString = NSString(data: data!, encoding: String.Encoding.utf8.rawValue)
-                print("response data = \(responseString!)")
-            self.showErrorAlert(errorMessage: "Image uploaded successfully.")
+            
+            do {
+                let json = try JSONSerialization.jsonObject(with: data!, options: []) as? [String : Any]
+                
+                self.currentUser?.user?.avatar_url = json?["data"] as? String
+                
+                
+                do {
+                    let encoder = JSONEncoder()
+                    let user = try encoder.encode(self.currentUser)
+                    UserDefaults.standard.set(user, forKey: "user")
+
+                } catch {
+                    print("Unable to Encode Note (\(error))")
+                    
+                }
+                
+                
+                if let avatar = self.currentUser?.user?.avatar_url {
+                        
+                    let url = URL(string: avatar)
+                    self.getData(from: url!) { data, response, error in
+                            guard let data = data, error == nil else { return }
+                            print("Download Finished")
+                            // always update the UI from the main thread
+                            DispatchQueue.main.async() { [weak self] in
+                                self?.userImage.image = UIImage(data: data)
+                            }
+                        }
+                    
+                }else{
+                    self.userImage.image = UIImage(systemName: "camera.fill")
+                }
+                
+                self.showErrorAlert(errorMessage: "Image uploaded successfully.")
+                
+            } catch {
+                print("errorMsg")
+            }
+            
+//                let responseString = NSString(data: data!, encoding: String.Encoding.utf8.rawValue)
+//                print("response data = \(responseString!)")
+            
             }
 
             task.resume()
@@ -284,3 +382,47 @@ extension ProfileViewController {
 }
 
 
+
+
+extension ProfileViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+
+    func openCamera() {
+        if UIImagePickerController.isSourceTypeAvailable(.camera) {
+            let imagePickerController = UIImagePickerController()
+            imagePickerController.delegate = self
+            imagePickerController.sourceType = .camera
+            present(imagePickerController, animated: true, completion: nil)
+        }
+    }
+    
+    func openGallery() {
+            if UIImagePickerController.isSourceTypeAvailable(.photoLibrary) {
+                let imagePickerController = UIImagePickerController()
+                imagePickerController.delegate = self
+                imagePickerController.sourceType = .photoLibrary
+                present(imagePickerController, animated: true, completion: nil)
+            }
+        }
+    
+
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        if let selectedImage = info[.originalImage] as? UIImage {
+            // Use the selected image
+            
+            avatarImageUploadRequest(imageToUpload: selectedImage, imgKey: "avatar")
+            
+        }
+
+        dismiss(animated: true, completion: nil)
+    }
+}
+
+
+
+class CircularImageView: UIImageView {
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        self.layer.cornerRadius = min(self.frame.size.height, self.frame.size.width) / 2
+        self.clipsToBounds = true
+    }
+}

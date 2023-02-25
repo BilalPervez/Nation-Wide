@@ -36,15 +36,16 @@ class HistoryViewController: UIViewController, UITableViewDelegate, UITableViewD
         
         DispatchQueue.main.async {
             
-            self.totalHours.text = "\(self.historyDetails?.total_hours ?? 0)"
+            let roundedNumber = round(10 * (self.historyDetails?.total_hours ?? 0)) / 10 // rounds to one decimal point
+            self.totalHours.text = "\(roundedNumber)"
             self.totalEarnings.text = "\(self.historyDetails?.total_earnings ?? 0)"
             
             self.navigationController?.isNavigationBarHidden = false
             self.navigationItem.hidesBackButton = true
             self.navigationController?.navigationBar.backgroundColor = UIColor.white
             
-            let notificationBarButton = UIBarButtonItem(image: UIImage(systemName: "bell.fill"), style: .done, target: self, action: #selector(self.notificationButtonPressed))
-            self.navigationItem.rightBarButtonItem  = notificationBarButton
+//            let notificationBarButton = UIBarButtonItem(image: UIImage(systemName: "bell.fill"), style: .done, target: self, action: #selector(self.notificationButtonPressed))
+//            self.navigationItem.rightBarButtonItem  = notificationBarButton
             
             let sideMenuBarButton = UIBarButtonItem(image: UIImage(systemName: "line.horizontal.3"), style: .done, target: self, action: #selector(self.sideMenuButtonPressed))
             self.navigationItem.leftBarButtonItem = sideMenuBarButton
@@ -106,8 +107,42 @@ extension HistoryViewController {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         let cell = tableView.dequeueReusableCell(withIdentifier: "HistoryTableViewCell", for: indexPath) as! HistoryTableViewCell
-        cell.date.text = "16-June-2022"
-        cell.day.text = "Thursday"
+        
+         
+        
+        
+        
+        if self.checkInCheckOutHistoryList?[indexPath.row].type == "break" {
+            
+            cell.lblBreak.isHidden = false
+            cell.lblCheckOut.isHidden = true
+            
+        }else {
+            
+            cell.lblBreak.isHidden = true
+            cell.lblCheckOut.isHidden = false
+            
+        }
+        
+        
+        
+        
+        
+
+        
+        
+        
+        let checkInDateType = self.checkInCheckOutHistoryList?[indexPath.row].check_in ?? 0.0
+        let checkInDate = Date(timeIntervalSince1970: checkInDateType)
+        
+        
+        
+            
+            let formatter = DateFormatter()
+            formatter.dateFormat = "EEEE"
+            let dayOfWeek = formatter.string(from: checkInDate)
+            cell.date.text = checkInDate.toString(dateFormat: "dd/MM/yyyy")
+            cell.day.text = dayOfWeek
         cell.checkInTime.text = self.checkInCheckOutHistoryList?[indexPath.row].check_in_time
         cell.checkOutTime.text = self.checkInCheckOutHistoryList?[indexPath.row].check_out_time
         return cell

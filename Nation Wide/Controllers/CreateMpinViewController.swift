@@ -73,7 +73,7 @@ class CreateMpinViewController: UIViewController, UITextFieldDelegate {
     func showErrorAlert(errorMessage: String?) {
         
         DispatchQueue.main.async {
-            let alert = UIAlertController(title: "Nation Wide", message: errorMessage, preferredStyle: UIAlertController.Style.alert)
+            let alert = UIAlertController(title: "Nationwide", message: errorMessage, preferredStyle: UIAlertController.Style.alert)
             alert.addAction(UIAlertAction(title: "OK", style: UIAlertAction.Style.default, handler: nil))
             self.present(alert, animated: true, completion: nil)
         }
@@ -187,8 +187,12 @@ extension CreateMpinViewController {
             print(error.localizedDescription)
         }
 
+      
+
         let task = session.dataTask(with: request as URLRequest, completionHandler: { data, response, error in
 
+            
+            
             KRProgressHUD.dismiss()
 
             if error != nil || data == nil {
@@ -207,9 +211,7 @@ extension CreateMpinViewController {
             }
 
             let decoder = JSONDecoder()
-            decoder.keyDecodingStrategy = .convertFromSnakeCase
-            decoder.dateDecodingStrategy = .secondsSince1970
-            guard let apiResponse = try? decoder.decode(LoginWithMpinResponse.self, from: data!) else {
+            guard let apiResponse = try? decoder.decode(Json4Swift_Base.self, from: data!) else {
                         return
             }
             
@@ -219,7 +221,7 @@ extension CreateMpinViewController {
                 self.showErrorAlert(errorMessage: apiResponse.message)
             } else {
                 
-                if self.storeUerObjectInStorage(userData: apiResponse.userData!) {
+                if self.storeUerObjectInStorage(userData: apiResponse.data!) {
                     self.navigationToNextScreen()
                 } else {
                     self.showErrorAlert(errorMessage: "Something Went Wrong. Please try again later")

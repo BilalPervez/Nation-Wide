@@ -13,6 +13,10 @@ import CoreLocation
 class SiteDetailViewController: UIViewController, CLLocationManagerDelegate, UNUserNotificationCenterDelegate {
     
     
+    /// Creating UIDocumentInteractionController instance.
+    let documentInteractionController = UIDocumentInteractionController()
+    
+    @IBOutlet weak var lblCompanyName: UILabel!
     @IBOutlet weak var chatButton: UIButton!
     @IBOutlet weak var historyButton: UIButton!
     @IBOutlet weak var workOrderRefrence: UILabel!
@@ -22,11 +26,10 @@ class SiteDetailViewController: UIViewController, CLLocationManagerDelegate, UNU
     @IBOutlet weak var state: UILabel!
     @IBOutlet weak var zipCode: UILabel!
     @IBOutlet weak var siteName: UILabel!
+    @IBOutlet weak var lblShiftTiming: UILabel!
     @IBOutlet weak var pocName: UILabel!
     @IBOutlet weak var pocCellNumber: UILabel!
-    @IBOutlet weak var CheckInTime: UILabel!
-    @IBOutlet weak var checkOutTime: UILabel!
-    @IBOutlet weak var breakInTime: UILabel!
+
     @IBOutlet weak var startDate: UILabel!
     @IBOutlet weak var endDate: UILabel!
     @IBOutlet weak var noOfDays: UILabel!
@@ -46,6 +49,11 @@ class SiteDetailViewController: UIViewController, CLLocationManagerDelegate, UNU
     
     var locationManager : CLLocationManager = CLLocationManager()
     let userNotificationCenter = UNUserNotificationCenter.current()
+    
+    var startTime: Date?
+    var endTime: Date?
+    var isDeviceWithinRegion: Bool?
+    
 
     override func viewDidLoad() {
         
@@ -78,15 +86,12 @@ class SiteDetailViewController: UIViewController, CLLocationManagerDelegate, UNU
                 
                 if let choutTime = loadCheckInOutData.check_out_time {
                     self.checkInOutdata = loadCheckInOutData;
-                    self.CheckInTime.text = self.checkInOutdata?.check_in_time
-                    self.checkOutTime.text = self.checkInOutdata?.check_out_time
                     self.btnCheckIn.isEnabled = true
                     self.btnCheckOut.isEnabled = false
                     self.btnBreak.isEnabled = false
                 }else {
                     
                     self.checkInOutdata = loadCheckInOutData;
-                    self.CheckInTime.text = self.checkInOutdata?.check_in_time
                     self.btnCheckIn.isEnabled = false
                     self.btnCheckOut.isEnabled = true
                     self.btnBreak.isEnabled = true
@@ -101,11 +106,144 @@ class SiteDetailViewController: UIViewController, CLLocationManagerDelegate, UNU
             self.btnBreak.isEnabled = false
         }
         
-        siteDetailsAPICall()
+//        let currentDate = Date()
+//        let calendar = Calendar.current
+//        let day = calendar.component(.day, from: currentDate)
+//        print(day)
+
         
+        
+        
+        
+        
+//        if let siteDetailData = UserDefaults.standard.object(forKey: "SiteDetail") as? Data {
+//
+//            let decoder = JSONDecoder()
+//            if let siteDetail = try? decoder.decode(SiteDetail.self, from: siteDetailData) {
+//
+//                self.siteDetail = siteDetail
+//
+//                if let st = self.siteDetail {
+//                    self.storeSiteDetailsInStorage(siteDetail: st)
+//                }else{
+//                    self.showErrorAlert(errorMessage: "This User has no job Assigned.")
+//                }
+//                self.setupUI()
+//
+//
+//            }
+//
+//        }else{
+            
+            siteDetailsAPICall()
+//            self.getCurrentDay()
+//        }
         
     }
     
+    
+ 
+    func  getCurrentStartAndEndDate(staringTime: [String?], endingTime: [String?]) -> [Date?] {
+        
+        
+        let date = Date()
+        let formatter = DateFormatter()
+        formatter.dateFormat = "EEEE"
+        let dayOfWeek = formatter.string(from: date)
+        print(dayOfWeek)
+
+        
+        if dayOfWeek == "Monday" {
+            
+            let startTime: String? = staringTime[0] ?? nil
+            let endTime: String? = endingTime[0] ?? nil
+            if let sDate = startTime, let eDate = endTime {
+                let startDate = sDate.dateValue
+                let endDate = eDate.dateValue
+                return [startDate ?? Date(), endDate ?? Date()]
+            }else{
+                return [nil, nil];
+            }
+            
+            
+        } else if dayOfWeek == "Tuseday" {
+            
+            let startTime: String? = staringTime[1] ?? nil
+            let endTime: String? = endingTime[1] ?? nil
+            if let sDate = startTime, let eDate = endTime {
+                let startDate = sDate.dateValue
+                let endDate = eDate.dateValue
+                return [startDate ?? Date(), endDate ?? Date()]
+            }else{
+                return [nil, nil];
+            }
+            
+        }else if dayOfWeek == "Wednesday" {
+            
+            let startTime: String? = staringTime[2] ?? nil
+            let endTime: String? = endingTime[2] ?? nil
+            if let sDate = startTime, let eDate = endTime {
+                let startDate = sDate.dateValue
+                let endDate = eDate.dateValue
+                return [startDate ?? Date(), endDate ?? Date()]
+            }else{
+                return [nil, nil];
+            }
+            
+        }else if dayOfWeek == "Thursday" {
+            
+            let startTime: String? = staringTime[3] ?? nil
+            let endTime: String? = endingTime[3] ?? nil
+            if let sDate = startTime, let eDate = endTime {
+                let startDate = sDate.dateValue
+                let endDate = eDate.dateValue
+                return [startDate ?? Date(), endDate ?? Date()]
+            }else{
+                return [nil, nil];
+            }
+            
+        }else if dayOfWeek == "Friday" {
+            
+            
+            let startTime: String? = staringTime[4] ?? nil
+            let endTime: String? = endingTime[4] ?? nil
+            if let sDate = startTime, let eDate = endTime {
+                let startDate = sDate.dateValue
+                let endDate = eDate.dateValue
+                return [startDate ?? Date(), endDate ?? Date()]
+            }else{
+                return [nil, nil];
+            }
+            
+        }else if dayOfWeek == "Saturday" {
+            
+            
+            let startTime: String? = staringTime[5] ?? nil
+            let endTime: String? = endingTime[5] ?? nil
+            if let sDate = startTime, let eDate = endTime {
+                let startDate = sDate.dateValue
+                let endDate = eDate.dateValue
+                return [startDate ?? Date(), endDate ?? Date()]
+            }else{
+                return [nil, nil];
+            }
+            
+            
+        }
+        
+        let startTime: String? = staringTime[6] ?? nil
+        let endTime: String? = endingTime[6] ?? nil
+        if let sDate = startTime, let eDate = endTime {
+            let startDate = sDate.dateValue
+            let endDate = eDate.dateValue
+            return [startDate ?? Date(), endDate ?? Date()]
+        }else{
+            return [nil, nil];
+        }
+        
+
+        
+    }
     
     func requestNotificationAuthorization() {
         let authOptions = UNAuthorizationOptions.init(arrayLiteral: .alert, .badge, .sound)
@@ -160,10 +298,12 @@ class SiteDetailViewController: UIViewController, CLLocationManagerDelegate, UNU
     
     func locationManager(_ manager: CLLocationManager, didExitRegion region: CLRegion) {
         sendNotification(message: "You are out of your region")
+        isDeviceWithinRegion = false
         checkOutAPICall(id: self.checkInOutdata?.id ?? 1, type: "check_out", timezone: localTimeZoneIdentifier, clicked: false)
     }
     
     func locationManager(_ manager: CLLocationManager, didEnterRegion region: CLRegion) {
+        isDeviceWithinRegion = true
         sendNotification(message: "You are inside of your region")
     }
     
@@ -202,13 +342,15 @@ class SiteDetailViewController: UIViewController, CLLocationManagerDelegate, UNU
                 self.startDate.text = startdate.toString(dateFormat: "dd/MM/yyyy")
                 self.endDate.text = enddate.toString(dateFormat: "dd/MM/yyyy")
                 self.noOfDays.text = "\(self.numberOfDaysBetween(startdate, and: enddate))"
-                self.workOrderRefrence.text = "\(st.job_id ?? 0)"
-                self.guardName.text = st.job?.person ?? ""
+                self.lblCompanyName.text = st.job?.company_name ?? ""
+                self.workOrderRefrence.text = st.job?.ref_no
+                self.guardName.text = self.guardNameFromUserDefaults
                 self.address.text = st.job?.poc_address ?? ""
                 self.city.text = st.job?.poc_city ?? ""
                 self.state.text = st.job?.poc_state
                 self.zipCode.text = st.job?.poc_zip
                 self.siteName.text = st.job?.site_name
+                self.lblShiftTiming.text = st.job?.shift
                 self.pocName.text = st.job?.person
                 self.pocCellNumber.text = st.job?.poc_cell_no
             } else {
@@ -229,6 +371,7 @@ class SiteDetailViewController: UIViewController, CLLocationManagerDelegate, UNU
             self.navigationItem.hidesBackButton = true
             self.navigationController?.navigationBar.backgroundColor = UIColor.white
             
+            self.navigationItem.title = self.siteDetail?.job?.company_name ?? ""
             let notificationBarButton = UIBarButtonItem(image: UIImage(systemName: "bell.fill"), style: .done, target: self, action: #selector(self.notificationButtonPressed))
             self.navigationItem.rightBarButtonItem  = notificationBarButton
             
@@ -247,20 +390,114 @@ class SiteDetailViewController: UIViewController, CLLocationManagerDelegate, UNU
         
     }
 
+    
+    
+    func downloadPDF(url: URL) {
+//      let task = URLSession.shared.dataTask(with: url) { data, response, error in
+//        guard let data = data, error == nil else { return }
+//        let documentsPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+//        let fileURL = documentsPath.appendingPathComponent("WorkOrder.pdf")
+//        do {
+//          try data.write(to: fileURL)
+//        } catch {
+//          print("Error while saving the PDF to local storage: \(error)")
+//        }
+//      }
+//      task.resume()
+        
+        
+        
+        // Create destination URL
+          let documentsUrl:URL =  FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+          let destinationFileUrl = documentsUrl.appendingPathComponent("downloadedFile.jpg")
+          
+          //Create URL to the source file you want to download
+          let fileURL = url
+          
+          let sessionConfig = URLSessionConfiguration.default
+          let session = URLSession(configuration: sessionConfig)
+       
+          let request = URLRequest(url:fileURL)
+          
+          let task = session.downloadTask(with: request) { (tempLocalUrl, response, error) in
+              if let tempLocalUrl = tempLocalUrl, error == nil {
+                  // Success
+                  if let statusCode = (response as? HTTPURLResponse)?.statusCode {
+                      print("Successfully downloaded. Status code: \(statusCode)")
+                  }
+                  
+                  do {
+                      try FileManager.default.copyItem(at: tempLocalUrl, to: destinationFileUrl)
+                  } catch (let writeError) {
+                      print("Error creating a file \(destinationFileUrl) : \(writeError)")
+                  }
+                  
+              } else {
+                  print("Error took place while downloading a file. Error description: %@", error?.localizedDescription);
+              }
+          }
+          task.resume()
+        
+        
+        
+    }
+    
+    
+    
+
+    
+    
     @objc func sideMenuButtonPressed(){
         present(sideMenu!, animated: true)
     }
     
     @objc func notificationButtonPressed(){
         let vc = UIStoryboard.init(name: "Main", bundle: Bundle.main).instantiateViewController(withIdentifier: "NotificationsViewController") as? NotificationsViewController
+        
+        
+        let startEndDates: [Date?] = self.getCurrentStartAndEndDate(staringTime: self.siteDetail?.starting_time ?? [], endingTime: self.siteDetail?.ending_time ?? [])
+        
+        let startDateTime: Date? = startEndDates.first ?? nil
+        let endDateTime: Date? = startEndDates.last ?? nil
+
+        
+        if let startTime = startDateTime, let endTime = endDateTime {
+            
+            let hours: Int   = Calendar.current.dateComponents([.hour], from: startTime, to: endTime).hour ?? 0
+            print(hours)
+            
+            var dates = [Date]()
+            for index in 0...hours {
+
+                let calendar = Calendar.current
+                let date = calendar.date(byAdding: .hour, value: index, to: startTime) ?? Date()
+                dates.append(date)
+
+            }
+            
+            vc?.dates = dates
+
+            
+        }else {
+         
+            
+            
+        }
+
+        
+        
+        
+        
         self.navigationController?.pushViewController(vc!, animated: true)
     }
+    
+    
     
     
     func showErrorAlert(errorMessage: String?) {
         
         DispatchQueue.main.async {
-            let alert = UIAlertController(title: "Nation Wide", message: errorMessage, preferredStyle: UIAlertController.Style.alert)
+            let alert = UIAlertController(title: "Nationwide", message: errorMessage, preferredStyle: UIAlertController.Style.alert)
             alert.addAction(UIAlertAction(title: "OK", style: UIAlertAction.Style.default, handler: nil))
             self.present(alert, animated: true, completion: nil)
         }
@@ -297,7 +534,29 @@ class SiteDetailViewController: UIViewController, CLLocationManagerDelegate, UNU
     }
     
     @IBAction func checkInPressed(_ sender: UIButton) {
-        checkInAPICall(job_id: self.siteDetail?.shift_id ?? 1, break_hours: 0, timezone: localTimeZoneIdentifier)
+        
+        let startEndDates: [Date?] = self.getCurrentStartAndEndDate(staringTime: self.siteDetail?.starting_time ?? [], endingTime: self.siteDetail?.ending_time ?? [])
+        
+        let startDateTime: Date? = startEndDates.first ?? nil
+        let endDateTime: Date? = startEndDates.last ?? nil
+        let currentDate: Date = Date()
+        
+        if let startTime = startDateTime, let endTime = endDateTime, let withinRegion = isDeviceWithinRegion{
+            if currentDate > startTime && currentDate < endTime && withinRegion {   // current time is between start and end time
+                
+                checkInAPICall(job_id: self.siteDetail?.shift_id ?? 1, break_hours: 0, timezone: localTimeZoneIdentifier)
+                
+            }else{
+                self.showErrorAlert(errorMessage: "This User has no duty time or not within region.")
+            }
+        }else{
+         
+            self.showErrorAlert(errorMessage: "This User has no duty time or not within region.")
+        }
+
+        
+
+        
     }
     
     @IBAction func checkOutPressed(_ sender: Any) {
@@ -309,8 +568,13 @@ class SiteDetailViewController: UIViewController, CLLocationManagerDelegate, UNU
     
     @IBAction func downLoadWorkOrderPressed(_ sender: UIButton) {
         
-        if let url = URL(string: self.siteDetail?.job?.work_order_url ?? "https://google.com/") {
-            UIApplication.shared.open(url)
+        
+        if let workOrderURL = self.siteDetail?.job?.work_order_url {
+            
+            let url: URL = URL(string: workOrderURL)!
+//            self.storeAndShare(withURLString: workOrderURL)
+            self.downloadPDF(url: url)
+
         }
         
         
@@ -350,14 +614,25 @@ extension SiteDetailViewController {
 
                 print("The Response is : ",apiResponse)
 
+                
+              
+                
                 if apiResponse.status == "Error" {
                     self.showErrorAlert(errorMessage: apiResponse.message)
                 } else {
+                    
                     self.siteDetail = apiResponse.siteDetail
                     
+                    
                     if let st = self.siteDetail {
+                        //Save CheckInData in Prefernces
+                        let encoder = JSONEncoder()
+                        let siteDetail = try encoder.encode(apiResponse.siteDetail)
+                        UserDefaults.standard.set(siteDetail, forKey: "SiteDetail")
+                        
                         self.storeSiteDetailsInStorage(siteDetail: st)
                     }else{
+                        UserDefaults.standard.set(nil, forKey: "SiteDetail")
                         self.showErrorAlert(errorMessage: "This User has no job Assigned.")
                     }
                     self.setupUI()
@@ -410,8 +685,7 @@ extension SiteDetailViewController {
                     
                     DispatchQueue.main.async {
                         
-                        self.CheckInTime.text = apiResponse.checkInCheckOutData?.check_in_time
-                        
+
                         self.btnCheckIn.isEnabled = false
                         self.btnCheckOut.isEnabled = true
                         self.btnBreak.isEnabled = true
@@ -469,11 +743,11 @@ extension SiteDetailViewController {
                         self.btnCheckOut.isEnabled = false
                         self.btnBreak.isEnabled = false
                         
-                        if type == "check_out" {
-                            self.checkOutTime.text = apiResponse.checkInCheckOutData?.check_out_time
-                        } else {
-                            self.breakInTime.text = apiResponse.checkInCheckOutData?.check_out_time
-                        }
+//                        if type == "check_out" {
+//                            self.checkOutTime.text = apiResponse.checkInCheckOutData?.check_out_time
+//                        } else {
+//                            self.breakInTime.text = apiResponse.checkInCheckOutData?.check_out_time
+//                        }
                         
                         
                         
@@ -491,3 +765,37 @@ extension SiteDetailViewController {
     
 }
 
+
+
+
+extension SiteDetailViewController {
+    /// This function will set all the required properties, and then provide a preview for the document
+    func share(url: URL) {
+        documentInteractionController.url = url
+//        documentInteractionController.uti = url.typeIdentifier ?? "public.data, public.content"
+        documentInteractionController.name = url.lastPathComponent
+//        documentInteractionController.presentPreview(animated: <#T##Bool#>)
+    }
+    
+    /// This function will store your document to some temporary URL and then provide sharing, copying, printing, saving options to the user
+    func storeAndShare(withURLString: String) {
+        guard let url = URL(string: withURLString) else { return }
+        /// START YOUR ACTIVITY INDICATOR HERE
+        KRProgressHUD.show()
+        URLSession.shared.dataTask(with: url) { data, response, error in
+            guard let data = data, error == nil else { return }
+            let tmpURL = FileManager.default.temporaryDirectory
+                .appendingPathComponent(response?.suggestedFilename ?? "fileName.png")
+            do {
+                try data.write(to: tmpURL)
+            } catch {
+                print(error)
+            }
+            DispatchQueue.main.async {
+                KRProgressHUD.dismiss()
+                /// STOP YOUR ACTIVITY INDICATOR HERE
+                self.share(url: tmpURL)
+            }
+        }.resume()
+    }
+}

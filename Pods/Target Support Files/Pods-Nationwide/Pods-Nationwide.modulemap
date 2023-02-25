@@ -1,0 +1,6 @@
+framework module Pods_Nationwide {
+  umbrella header "Pods-Nationwide-umbrella.h"
+
+  export *
+  module * { export * }
+}

@@ -2,6 +2,22 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>CFBundleIdentifier</key>
+	<string></string>
+	<key>NSLocationUsageDescription</key>
+	<string>Nationwide requires access to your phone’s location for geo fencing.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Nationwide requires access to your phone’s Gallery for uploading photo on server.</string>
+	<key>NSAppleMusicUsageDescription</key>
+	<string>Nationwide requires access to your phone’s Gallery for uploading photo on server.</string>
+	<key>NSDocumentsFolderUsageDescription</key>
+	<string>Nationwide requires access to your phone’s Folder for downloading documents.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Nationwide requires access to your phone’s location for geo fencing.</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>Nationwide requires access to your phone’s location for geo fencing.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Nationwide requires access to your phone’s camera for uploading photo on server.</string>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>

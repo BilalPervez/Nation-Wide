@@ -8,6 +8,7 @@
 import UIKit
 import SideMenu
 import KRProgressHUD
+import CoreMedia
 
 class NotificationsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
@@ -15,8 +16,10 @@ class NotificationsViewController: UIViewController, UITableViewDelegate, UITabl
     var sideMenu: SideMenuNavigationController?
     @IBOutlet weak var notificationsTableView: UITableView!
     
+    
+    var dates:[Date]?
     var token = ""
-    var jobId = 0
+    var shiftId = 0
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -45,7 +48,7 @@ class NotificationsViewController: UIViewController, UITableViewDelegate, UITabl
         if let siteDetail = UserDefaults.standard.object(forKey: "siteDetail") as? Data {
             let decoder = JSONDecoder()
             if let siteDetail = try? decoder.decode(SiteDetail.self, from: siteDetail) {
-                self.jobId = siteDetail.job_id ?? 0
+                self.shiftId = siteDetail.shift_id ?? 0
             }
         }
     }
@@ -56,8 +59,8 @@ class NotificationsViewController: UIViewController, UITableViewDelegate, UITabl
         self.navigationItem.hidesBackButton = true
         self.navigationController?.navigationBar.backgroundColor = UIColor.white
         
-        let notificationBarButton = UIBarButtonItem(image: UIImage(systemName: "bell.fill"), style: .done, target: self, action: #selector(notificationButtonPressed))
-        self.navigationItem.rightBarButtonItem  = notificationBarButton
+//        let notificationBarButton = UIBarButtonItem(image: UIImage(systemName: "bell.fill"), style: .done, target: self, action: #selector(notificationButtonPressed))
+//        self.navigationItem.rightBarButtonItem  = notificationBarButton
         
         let sideMenuBarButton = UIBarButtonItem(image: UIImage(systemName: "line.horizontal.3"), style: .done, target: self, action: #selector(sideMenuButtonPressed))
         self.navigationItem.leftBarButtonItem = sideMenuBarButton
@@ -84,21 +87,49 @@ class NotificationsViewController: UIViewController, UITableViewDelegate, UITabl
 
 extension NotificationsViewController {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 10
+        return dates?.count ?? 0
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        
+        
+        
         let cell = tableView.dequeueReusableCell(withIdentifier: "NotificationsTableViewCell", for: indexPath) as! NotificationsTableViewCell
+        
+        let date: Date = dates?[indexPath.row] ?? Date()
+        let time = date.toString(dateFormat: "HH:mm")
+        let hour = Int(time.split(separator: ":").first ?? "0")
+        cell.timeLabel.text = time
+        
+        let CurrentHour: Int   = (Calendar.current.component(.hour, from: Date()))
+        if CurrentHour == hour {
+            cell.userImage.tintColor = UIColor(hexString: "#007AFF")
+        }else{
+            
+            cell.userImage.tintColor = UIColor(hexString: "#8E8E93")
+        }
+        
         cell.selectionStyle = .none
         return cell
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let picker = UIImagePickerController()
-        picker.sourceType = .camera
-        picker.allowsEditing = true
-        picker.delegate = self
-        present(picker, animated: true)
+        
+        let date: Date = dates?[indexPath.row] ?? Date()
+        let time = date.toString(dateFormat: "HH:mm")
+        let hour = Int(time.split(separator: ":").first ?? "0")
+        
+        let CurrentHour: Int   = (Calendar.current.component(.hour, from: Date()))
+        if CurrentHour == hour {
+            
+            let picker = UIImagePickerController()
+            picker.sourceType = .camera
+            picker.allowsEditing = true
+            picker.delegate = self
+            present(picker, animated: true)
+            
+        }
+        
     }
 }
 
@@ -142,7 +173,7 @@ extension NotificationsViewController: UIImagePickerControllerDelegate, UINaviga
         request.setValue( "Bearer \(token)", forHTTPHeaderField: "Authorization")
 
         let param = [
-            "job_id"  : "\(self.jobId ?? 0)",
+            "shift_id"  : "\(self.shiftId ?? 0)",
             "reason"    : "notification"
         ]
 
@@ -209,3 +240,7 @@ extension NotificationsViewController: UIImagePickerControllerDelegate, UINaviga
     
     
 }
+
+
+
+

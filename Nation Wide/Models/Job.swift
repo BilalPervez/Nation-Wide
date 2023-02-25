@@ -34,6 +34,9 @@ struct Job : Codable {
     let deleted_at : String?
     let created_at : String?
     let updated_at : String?
+    let company_name : String?
+    let remarks : String?
+    let duration : String?
     let work_order_url : String?
 
     enum CodingKeys: String, CodingKey {
@@ -59,6 +62,9 @@ struct Job : Codable {
         case deleted_at = "deleted_at"
         case created_at = "created_at"
         case updated_at = "updated_at"
+        case company_name = "company_name"
+        case remarks = "remarks"
+        case duration = "duration"
         case work_order_url = "work_order_url"
     }
 
@@ -85,6 +91,9 @@ struct Job : Codable {
         deleted_at = try values.decodeIfPresent(String.self, forKey: .deleted_at)
         created_at = try values.decodeIfPresent(String.self, forKey: .created_at)
         updated_at = try values.decodeIfPresent(String.self, forKey: .updated_at)
+        company_name = try values.decodeIfPresent(String.self, forKey: .company_name)
+        remarks = try values.decodeIfPresent(String.self, forKey: .remarks)
+        duration = try values.decodeIfPresent(String.self, forKey: .duration)
         work_order_url = try values.decodeIfPresent(String.self, forKey: .work_order_url)
     }
 

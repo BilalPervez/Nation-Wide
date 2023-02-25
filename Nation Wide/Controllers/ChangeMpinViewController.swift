@@ -34,8 +34,8 @@ class ChangeMpinViewController: UIViewController {
             self.navigationItem.hidesBackButton = true
             self.navigationController?.navigationBar.backgroundColor = UIColor.white
             
-            let notificationBarButton = UIBarButtonItem(image: UIImage(systemName: "bell.fill"), style: .done, target: self, action: #selector(self.notificationButtonPressed))
-            self.navigationItem.rightBarButtonItem  = notificationBarButton
+//            let notificationBarButton = UIBarButtonItem(image: UIImage(systemName: "bell.fill"), style: .done, target: self, action: #selector(self.notificationButtonPressed))
+//            self.navigationItem.rightBarButtonItem  = notificationBarButton
             
             let sideMenuBarButton = UIBarButtonItem(image: UIImage(systemName: "line.horizontal.3"), style: .done, target: self, action: #selector(self.sideMenuButtonPressed))
             self.navigationItem.leftBarButtonItem = sideMenuBarButton

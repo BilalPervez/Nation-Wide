@@ -1,5 +1,5 @@
 /* 
-Copyright (c) 2022 Swift Models Generated from JSON powered by http://www.json4swift.com
+Copyright (c) 2023 Swift Models Generated from JSON powered by http://www.json4swift.com
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
@@ -25,12 +25,15 @@ struct User : Codable {
 	let state : String?
 	let zip : String?
 	let avatar : String?
+	let role : String?
 	let email_verified_at : String?
+	let job_info : String?
 	let assigned : Int?
+	let deleted_at : String?
 	let created_at : String?
 	let updated_at : String?
 	let device_token : String?
-	let avatar_url : String?
+	var avatar_url : String?
 
 	enum CodingKeys: String, CodingKey {
 
@@ -46,8 +49,11 @@ struct User : Codable {
 		case state = "state"
 		case zip = "zip"
 		case avatar = "avatar"
+		case role = "role"
 		case email_verified_at = "email_verified_at"
+		case job_info = "job_info"
 		case assigned = "assigned"
+		case deleted_at = "deleted_at"
 		case created_at = "created_at"
 		case updated_at = "updated_at"
 		case device_token = "device_token"
@@ -68,8 +74,11 @@ struct User : Codable {
 		state = try values.decodeIfPresent(String.self, forKey: .state)
 		zip = try values.decodeIfPresent(String.self, forKey: .zip)
 		avatar = try values.decodeIfPresent(String.self, forKey: .avatar)
+		role = try values.decodeIfPresent(String.self, forKey: .role)
 		email_verified_at = try values.decodeIfPresent(String.self, forKey: .email_verified_at)
+		job_info = try values.decodeIfPresent(String.self, forKey: .job_info)
 		assigned = try values.decodeIfPresent(Int.self, forKey: .assigned)
+		deleted_at = try values.decodeIfPresent(String.self, forKey: .deleted_at)
 		created_at = try values.decodeIfPresent(String.self, forKey: .created_at)
 		updated_at = try values.decodeIfPresent(String.self, forKey: .updated_at)
 		device_token = try values.decodeIfPresent(String.self, forKey: .device_token)

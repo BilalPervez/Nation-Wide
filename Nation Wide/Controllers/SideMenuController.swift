@@ -11,11 +11,12 @@ import KRProgressHUD
 
 class SideMenuController: UITableViewController {
     
-    let items = ["Dashboard","Profile","Payout","Emergency","Change MPin"]
+//    let items = ["Dashboard","Profile","Payout","Emergency","Change MPin"]
+    let items = ["Dashboard","Profile","Emergency","Change MPin"]
     let logoutbutton = UIButton()
     var token = ""
     var phoneNumber: String?
-    var jobId = 0
+    var siftId = 0
     var user: UserData?
     
     override func viewDidLoad() {
@@ -50,7 +51,7 @@ class SideMenuController: UITableViewController {
         if let siteDetail = UserDefaults.standard.object(forKey: "siteDetail") as? Data {
             let decoder = JSONDecoder()
             if let siteDetail = try? decoder.decode(SiteDetail.self, from: siteDetail) {
-                self.jobId = siteDetail.job_id ?? 0
+                self.siftId = siteDetail.shift_id ?? 0
             }
         }
     }
@@ -87,7 +88,7 @@ class SideMenuController: UITableViewController {
         let headerView = UIView.init(frame: CGRect.init(x: 0, y: 0, width: tableView.frame.width, height: 150))
 
         
-        let image = UIImageView()
+        let image = CircularImageView()
         image.frame = CGRect.init(x: 70, y: -10, width: 100, height: 100)
         if let avatar = self.user?.user?.avatar_url {
                 
@@ -109,7 +110,7 @@ class SideMenuController: UITableViewController {
         
         let label = UILabel()
         label.frame = CGRect.init(x: 10, y: headerView.frame.height / 3, width: headerView.frame.width-20, height: headerView.frame.height-20)
-        label.text = "\(self.user?.user?.first_name) \(self.user?.user?.last_name)" ?? "Jhon Smith"
+        label.text = "\(self.user?.user?.first_name ?? "") \(self.user?.user?.last_name ?? "")"
         label.lineBreakMode = .byWordWrapping
         label.numberOfLines = 0
         label.textAlignment = .center
@@ -167,15 +168,12 @@ class SideMenuController: UITableViewController {
             let vc = UIStoryboard.init(name: "Main", bundle: Bundle.main).instantiateViewController(withIdentifier: "ProfileViewController") as? ProfileViewController
             self.navigationController?.pushViewController(vc!, animated: false)
         } else if indexPath.row == 2 {
-            let vc = UIStoryboard.init(name: "Main", bundle: Bundle.main).instantiateViewController(withIdentifier: "PayoutsViewController") as? PayoutsViewController
-            self.navigationController?.pushViewController(vc!, animated: false)
-        } else if indexPath.row == 3 {
             let picker = UIImagePickerController()
             picker.sourceType = .camera
             picker.allowsEditing = true
             picker.delegate = self
             present(picker, animated: true)
-        }else if indexPath.row == 4 {
+        }else if indexPath.row == 3 {
             let vc = UIStoryboard.init(name: "Main", bundle: Bundle.main).instantiateViewController(withIdentifier: "ChangeMpinViewController") as? ChangeMpinViewController
             vc?.phoneNumber = phoneNumber
             self.navigationController?.pushViewController(vc!, animated: false)
@@ -225,7 +223,7 @@ extension SideMenuController: UIImagePickerControllerDelegate, UINavigationContr
         request.setValue( "Bearer \(token)", forHTTPHeaderField: "Authorization")
 
         let param = [
-            "job_id"  : "\(self.jobId ?? 0)",
+            "shift_id"  : "\(self.siftId ?? 0)",
             "reason"    : "emergency"
         ]
 
