@@ -16,7 +16,7 @@ class HistoryViewController: UIViewController, UITableViewDelegate, UITableViewD
     
     @IBOutlet weak var historyTableView: UITableView!
     @IBOutlet weak var totalHours: UILabel!
-    @IBOutlet weak var totalEarnings: UILabel!
+    
     
     var sideMenu: SideMenuNavigationController?
     var checkInCheckOutHistoryList : [CheckInCheckOutHistoryObject]?
@@ -38,7 +38,7 @@ class HistoryViewController: UIViewController, UITableViewDelegate, UITableViewD
             
             let roundedNumber = round(10 * (self.historyDetails?.total_hours ?? 0)) / 10 // rounds to one decimal point
             self.totalHours.text = "\(roundedNumber)"
-            self.totalEarnings.text = "\(self.historyDetails?.total_earnings ?? 0)"
+//            self.totalEarnings.text = "\(self.historyDetails?.total_earnings ?? 0)"
             
             self.navigationController?.isNavigationBarHidden = false
             self.navigationItem.hidesBackButton = true
@@ -65,7 +65,7 @@ class HistoryViewController: UIViewController, UITableViewDelegate, UITableViewD
     func showErrorAlert(errorMessage: String?) {
         
         DispatchQueue.main.async {
-            let alert = UIAlertController(title: "Nation Wide", message: errorMessage, preferredStyle: UIAlertController.Style.alert)
+            let alert = UIAlertController(title: "Nationwide", message: errorMessage, preferredStyle: UIAlertController.Style.alert)
             alert.addAction(UIAlertAction(title: "OK", style: UIAlertAction.Style.default, handler: nil))
             self.present(alert, animated: true, completion: nil)
         }

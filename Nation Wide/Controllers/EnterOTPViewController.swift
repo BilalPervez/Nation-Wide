@@ -1,6 +1,6 @@
 //
 //  EnterOTPViewController.swift
-//  Nation Wide
+//  Nationwide
 //
 //  Created by Solution Surface on 13/06/2022.
 //
@@ -40,6 +40,7 @@ class EnterOTPViewController: UIViewController, UITextFieldDelegate {
             DispatchQueue.main.async {
                 let vc = UIStoryboard.init(name: "Main", bundle: Bundle.main).instantiateViewController(withIdentifier: "CreateMpinViewController") as? CreateMpinViewController
                 vc?.phoneNumber = self.phoneNumber
+                vc?.isUpdateMPIN = true
                 self.navigationController?.pushViewController(vc!, animated: true)
             }
             

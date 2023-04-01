@@ -1,6 +1,6 @@
 //
 //  ProfileViewController.swift
-//  Nation Wide
+//  Nationwide
 //
 //  Created by Solution Surface on 16/06/2022.
 //
@@ -135,7 +135,7 @@ class ProfileViewController: UIViewController {
     func showErrorAlert(errorMessage: String?) {
         
         DispatchQueue.main.async {
-            let alert = UIAlertController(title: "Nation Wide", message: errorMessage, preferredStyle: UIAlertController.Style.alert)
+            let alert = UIAlertController(title: "Nationwide", message: errorMessage, preferredStyle: UIAlertController.Style.alert)
             alert.addAction(UIAlertAction(title: "OK", style: UIAlertAction.Style.default, handler: nil))
             self.present(alert, animated: true, completion: nil)
         }

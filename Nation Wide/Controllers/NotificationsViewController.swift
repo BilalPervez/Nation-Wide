@@ -1,6 +1,6 @@
 //
 //  NotificationsViewController.swift
-//  Nation Wide
+//  Nationwide
 //
 //  Created by Solution Surface on 17/06/2022.
 //
@@ -115,20 +115,40 @@ extension NotificationsViewController {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
-        let date: Date = dates?[indexPath.row] ?? Date()
-        let time = date.toString(dateFormat: "HH:mm")
-        let hour = Int(time.split(separator: ":").first ?? "0")
-        
-        let CurrentHour: Int   = (Calendar.current.component(.hour, from: Date()))
-        if CurrentHour == hour {
-            
-            let picker = UIImagePickerController()
-            picker.sourceType = .camera
-            picker.allowsEditing = true
-            picker.delegate = self
-            present(picker, animated: true)
-            
+        if let checkInData = UserDefaults.standard.object(forKey: "CheckIN") as? Data {
+            let decoder = JSONDecoder()
+            if let loadCheckInOutData = try? decoder.decode(CheckInCheckOutData.self, from: checkInData) {
+                
+                if let choutTime = loadCheckInOutData.check_out_time {
+                    
+                    self.showErrorAlert(errorMessage: "Please checkIn!")
+                    
+                }else {
+                    
+                    let date: Date = dates?[indexPath.row] ?? Date()
+                    let time = date.toString(dateFormat: "HH:mm")
+                    let hour = Int(time.split(separator: ":").first ?? "0")
+                    
+                    let CurrentHour: Int   = (Calendar.current.component(.hour, from: Date()))
+                    if CurrentHour == hour {
+                        
+                        let picker = UIImagePickerController()
+                        picker.sourceType = .camera
+                        picker.allowsEditing = true
+                        picker.delegate = self
+                        present(picker, animated: true)
+                        
+                    }
+                }
+                
+                
+            }else{
+                
+                self.showErrorAlert(errorMessage: "Please checkIn!")
+            }
         }
+        
+       
         
     }
 }
@@ -139,7 +159,7 @@ extension NotificationsViewController: UIImagePickerControllerDelegate, UINaviga
     func showErrorAlert(errorMessage: String?) {
         
         DispatchQueue.main.async {
-            let alert = UIAlertController(title: "Nation Wide", message: errorMessage, preferredStyle: UIAlertController.Style.alert)
+            let alert = UIAlertController(title: "Nationwide", message: errorMessage, preferredStyle: UIAlertController.Style.alert)
             alert.addAction(UIAlertAction(title: "OK", style: UIAlertAction.Style.default, handler: nil))
             self.present(alert, animated: true, completion: nil)
         }

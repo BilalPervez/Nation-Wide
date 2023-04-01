@@ -62,7 +62,12 @@ class ChangeMpinViewController: UIViewController {
     
 
     @IBAction func didTapChangeMPIN(_ sender: UIButton) {
-        if self.newPasswordTextField.text == self.confirmPasswordTextField.text {
+        
+        if self.newPasswordTextField.text == self.oldPasswordTextField.text {
+            
+            self.showErrorAlert(errorMessage: "New and Old Password shouldn't be same.")
+            
+        }else if self.newPasswordTextField.text == self.confirmPasswordTextField.text {
             
             changeMpin()
             
@@ -159,7 +164,7 @@ class ChangeMpinViewController: UIViewController {
     func showErrorAlert(errorMessage: String?) {
         
         DispatchQueue.main.async {
-            let alert = UIAlertController(title: "Nation Wide", message: errorMessage, preferredStyle: UIAlertController.Style.alert)
+            let alert = UIAlertController(title: "Nationwide", message: errorMessage, preferredStyle: UIAlertController.Style.alert)
             alert.addAction(UIAlertAction(title: "OK", style: UIAlertAction.Style.default, handler: nil))
             self.present(alert, animated: true, completion: nil)
         }

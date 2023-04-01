@@ -1,6 +1,6 @@
 //
 //  Extensions.swift
-//  Nation Wide
+//  Nationwide
 //
 //  Created by Solution Surface on 15/06/2022.
 //

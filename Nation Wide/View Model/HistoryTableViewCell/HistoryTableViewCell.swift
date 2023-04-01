@@ -1,6 +1,6 @@
 //
 //  HistoryTableViewCell.swift
-//  Nation Wide
+//  Nationwide
 //
 //  Created by Solution Surface on 16/06/2022.
 //

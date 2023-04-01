@@ -1,6 +1,6 @@
 //
 //  CreateMpinViewController.swift
-//  Nation Wide
+//  Nationwide
 //
 //  Created by Solution Surface on 13/06/2022.
 //
@@ -82,13 +82,18 @@ class CreateMpinViewController: UIViewController, UITextFieldDelegate {
     }
 
     @IBAction func loginPressed(_ sender: UIButton) {
-        loginWithMpin()
+        if  isUpdateMPIN ?? false {
+            changeMpin()
+        }else{
+            loginWithMpin()
+        }
+        
     }
     
     @IBAction func forgotMpinPressed(_ sender: UIButton) {
         
         
-        verifyPhoneAPICall();
+        verifyPhoneAPICall(status: false);
        
         
         
@@ -100,12 +105,12 @@ class CreateMpinViewController: UIViewController, UITextFieldDelegate {
 extension CreateMpinViewController {
     
     
-    func verifyPhoneAPICall() {
+    func verifyPhoneAPICall(status: Bool) {
         
         KRProgressHUD.show()
 
         let session = URLSession.shared
-        let url = URL(string: "https://setrank.work/public/api/verify_phone?phone=\(self.phoneNumber ?? "")&status=false")!
+        let url = URL(string: "https://setrank.work/public/api/verify_phone?phone=\(self.phoneNumber ?? "")&status=\(status)")!
         
         let task = session.dataTask(with: url) { data, response, error in
             KRProgressHUD.dismiss()
@@ -137,19 +142,30 @@ extension CreateMpinViewController {
                 
             } else {
                 
-                
-                DispatchQueue.main.async {
+                if status {
                     
-                    guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-                        let sceneDelegate = windowScene.delegate as? SceneDelegate
-                      else {
-                        return
-                      }
-                    UserDefaults.standard.set(nil, forKey: "user")
-                    let loginVC = self.storyboard?.instantiateViewController(withIdentifier: "SignInViewController") as! SignInViewController
-                    let navigationHomeVC = UINavigationController(rootViewController: loginVC)
-                    sceneDelegate.window?.rootViewController = navigationHomeVC
+                    DispatchQueue.main.async {
+                        
+                        self.navigationToNextScreen()
+                    }
+                    
+                }else{
+                    
+                    DispatchQueue.main.async {
+                        
+                        guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+                            let sceneDelegate = windowScene.delegate as? SceneDelegate
+                          else {
+                            return
+                          }
+                        UserDefaults.standard.set(nil, forKey: "user")
+                        let loginVC = self.storyboard?.instantiateViewController(withIdentifier: "SignInViewController") as! SignInViewController
+                        let navigationHomeVC = UINavigationController(rootViewController: loginVC)
+                        sceneDelegate.window?.rootViewController = navigationHomeVC
+                    }
+                    
                 }
+              
                 
                
                 
@@ -158,6 +174,86 @@ extension CreateMpinViewController {
         task.resume()
         
         
+    }
+    
+    
+    
+    func changeMpin() {
+        
+        KRProgressHUD.show()
+        
+        let configuration = URLSessionConfiguration.default
+        configuration.timeoutIntervalForRequest = 30
+        configuration.timeoutIntervalForResource = 30
+        let session = URLSession(configuration: configuration)
+
+        let url = URL(string: "https://setrank.work/public/api/update_password")!
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.addValue("application/json", forHTTPHeaderField: "Accept")
+
+        let parameters = ["phone": self.phoneNumber ?? "",
+                          "new_password": self.loginTextField.text ?? "",
+                          
+        ] as [String : Any]
+
+        do {
+            request.httpBody = try JSONSerialization.data(withJSONObject: parameters, options: .prettyPrinted)
+        } catch let error {
+            print(error.localizedDescription)
+        }
+
+        let task = session.dataTask(with: request as URLRequest, completionHandler: { data, response, error in
+
+            KRProgressHUD.dismiss()
+
+            if error != nil || data == nil {
+                print("Client error!")
+                return
+            }
+
+            guard let response = response as? HTTPURLResponse, (200...299).contains(response.statusCode) else {
+                print("Oops!! there is server error!")
+                return
+            }
+
+            guard let mime = response.mimeType, mime == "application/json" else {
+                print("response is not json")
+                return
+            }
+
+            let decoder = JSONDecoder()
+            decoder.keyDecodingStrategy = .convertFromSnakeCase
+            decoder.dateDecodingStrategy = .secondsSince1970
+            guard let apiResponse = try? decoder.decode(SignInWithCellPhoneResponse.self, from: data!) else {
+                        return
+            }
+            
+            print("The Response is : ",apiResponse)
+            
+            if apiResponse.status == "Error" {
+                self.showErrorAlert(errorMessage: apiResponse.message)
+            } else {
+                
+                self.verifyPhoneAPICall(status: true);
+//                self.showErrorAlert(errorMessage: apiResponse.message)
+                
+//                if self.storeUerObjectInStorage(userData: apiResponse.userData!) {
+////                    self.navigationToNextScreen()
+//                } else {
+//                    self.showErrorAlert(errorMessage: "Something Went Wrong. Please try again later")
+//                }
+                
+                
+                
+                
+            }
+
+        })
+
+        task.resume()
     }
     
     

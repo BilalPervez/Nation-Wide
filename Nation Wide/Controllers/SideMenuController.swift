@@ -1,6 +1,6 @@
 //
 //  SideMenuController.swift
-//  Nation Wide
+//  Nationwide
 //
 //  Created by Solution Surface on 15/06/2022.
 //
@@ -8,6 +8,7 @@
 import Foundation
 import UIKit
 import KRProgressHUD
+import SDWebImage
 
 class SideMenuController: UITableViewController {
     
@@ -59,7 +60,7 @@ class SideMenuController: UITableViewController {
     
     @objc func logOutPressed(){
         
-        let alert = UIAlertController(title: "Nation Wide", message: "Are you sure you want to logout?", preferredStyle: .alert)
+        let alert = UIAlertController(title: "Nationwide", message: "Are you sure you want to logout?", preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "NO", style: .default, handler: { action in
             alert.dismiss(animated: true)
         }))
@@ -89,18 +90,11 @@ class SideMenuController: UITableViewController {
 
         
         let image = CircularImageView()
-        image.frame = CGRect.init(x: 70, y: -10, width: 100, height: 100)
+        image.frame = CGRect.init(x: 70, y: 0, width: 100, height: 100)
         if let avatar = self.user?.user?.avatar_url {
-                
+            
             let url = URL(string: avatar)
-            getData(from: url!) { data, response, error in
-                    guard let data = data, error == nil else { return }
-                    print("Download Finished")
-                    // always update the UI from the main thread
-                    DispatchQueue.main.async() { [weak self] in
-                        image.image = UIImage(data: data)
-                    }
-                }
+            image.sd_setImage(with: url, completed: nil)
             
         }else{
             image.image = UIImage(systemName: "camera.circle")
@@ -109,14 +103,14 @@ class SideMenuController: UITableViewController {
 
         
         let label = UILabel()
-        label.frame = CGRect.init(x: 10, y: headerView.frame.height / 3, width: headerView.frame.width-20, height: headerView.frame.height-20)
+        label.frame = CGRect.init(x: 10, y: 104, width: headerView.frame.width-20, height: 40)
         label.text = "\(self.user?.user?.first_name ?? "") \(self.user?.user?.last_name ?? "")"
         label.lineBreakMode = .byWordWrapping
         label.numberOfLines = 0
         label.textAlignment = .center
         label.font = .systemFont(ofSize: 16)
         label.textColor = UIColor(hexFromString: "#0067B2")
-        
+
         headerView.addSubview(label)
         headerView.addSubview(image)
 
@@ -189,7 +183,7 @@ extension SideMenuController: UIImagePickerControllerDelegate, UINavigationContr
     func showErrorAlert(errorMessage: String?) {
         
         DispatchQueue.main.async {
-            let alert = UIAlertController(title: "Nation Wide", message: errorMessage, preferredStyle: UIAlertController.Style.alert)
+            let alert = UIAlertController(title: "Nationwide", message: errorMessage, preferredStyle: UIAlertController.Style.alert)
             alert.addAction(UIAlertAction(title: "OK", style: UIAlertAction.Style.default, handler: nil))
             self.present(alert, animated: true, completion: nil)
         }

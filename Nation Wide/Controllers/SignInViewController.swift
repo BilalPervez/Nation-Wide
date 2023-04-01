@@ -1,6 +1,6 @@
 //
 //  SignInViewController.swift
-//  Nation Wide
+//  Nationwide
 //
 //  Created by Solution Surface on 13/06/2022.
 //
@@ -22,7 +22,7 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
         
         self.signInTextField.delegate = self
         
-        self.signInTextField.text = "315-503-1862"
+//        self.signInTextField.text = "315-503-1862"
         
         self.sendButton.setTitleColor(.white, for: .normal)
         
@@ -63,6 +63,7 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
             DispatchQueue.main.async {
                 let vc = UIStoryboard.init(name: "Main", bundle: Bundle.main).instantiateViewController(withIdentifier: "CreateMpinViewController") as? CreateMpinViewController
                 vc?.phoneNumber = self.signInTextField.text
+                vc?.isUpdateMPIN = false
                 self.navigationController?.pushViewController(vc!, animated: true)
             }
             

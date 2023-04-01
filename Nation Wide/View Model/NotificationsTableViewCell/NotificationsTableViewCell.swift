@@ -1,6 +1,6 @@
 //
 //  NotificationsTableViewCell.swift
-//  Nation Wide
+//  Nationwide
 //
 //  Created by Solution Surface on 17/06/2022.
 //

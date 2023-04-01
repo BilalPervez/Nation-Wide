@@ -1,6 +1,6 @@
 //
 //  ChatViewController.swift
-//  Nation Wide
+//  Nationwide
 //
 //  Created by Solution Surface on 15/06/2022.
 //
@@ -363,7 +363,7 @@ extension ChatViewController: InputBarAccessoryViewDelegate {
         
         
         
-        var request = URLRequest(url: URL(string: "https://setrank.work/public/api/chats/1/sendMessage")!)
+        var request = URLRequest(url: URL(string: "https://setrank.work/public/api/chats/\(chatId)/sendMessage")!)
         request.httpMethod = "POST"
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
         request.addValue("application/json", forHTTPHeaderField: "Accept")

@@ -1,6 +1,6 @@
 //
 //  SiteDetailViewController.swift
-//  Nation Wide
+//  Nationwide
 //
 //  Created by Solution Surface on 14/06/2022.
 //
@@ -142,9 +142,102 @@ class SiteDetailViewController: UIViewController, CLLocationManagerDelegate, UNU
     }
     
     
+    
+       func  getCurrentShiftTime(staringTime: [String?], endingTime: [String?]) -> String? {
+           
+           
+           let date = Date()
+           let formatter = DateFormatter()
+           formatter.dateFormat = "EEEE"
+           let dayOfWeek = formatter.string(from: date)
+           print(dayOfWeek)
+
+           
+           if dayOfWeek == "Monday" {
+               
+               let startTime: String? = staringTime[0] ?? nil
+               let endTime: String? = endingTime[0] ?? nil
+               if let sDate = startTime, let eDate = endTime {
+                   return "\(sDate) - \(eDate)"
+               }else{
+                   return nil
+               }
+               
+               
+           } else if dayOfWeek == "Tuseday" {
+               
+               let startTime: String? = staringTime[1] ?? nil
+               let endTime: String? = endingTime[1] ?? nil
+               if let sDate = startTime, let eDate = endTime {
+                   return "\(sDate) - \(eDate)"
+               }else{
+                   return nil
+               }
+               
+           }else if dayOfWeek == "Wednesday" {
+               
+               let startTime: String? = staringTime[2] ?? nil
+               let endTime: String? = endingTime[2] ?? nil
+               if let sDate = startTime, let eDate = endTime {
+                   return "\(sDate) - \(eDate)"
+               }else{
+                   return nil
+               }
+               
+           }else if dayOfWeek == "Thursday" {
+               
+               let startTime: String? = staringTime[3] ?? nil
+               let endTime: String? = endingTime[3] ?? nil
+               if let sDate = startTime, let eDate = endTime {
+                   return "\(sDate) - \(eDate)"
+               }else{
+                   return nil
+               }
+               
+           }else if dayOfWeek == "Friday" {
+               
+               
+               let startTime: String? = staringTime[4] ?? nil
+               let endTime: String? = endingTime[4] ?? nil
+               if let sDate = startTime, let eDate = endTime {
+                   return "\(sDate) - \(eDate)"
+               }else{
+                   return nil
+               }
+               
+           }else if dayOfWeek == "Saturday" {
+               
+               
+               let startTime: String? = staringTime[5] ?? nil
+               let endTime: String? = endingTime[5] ?? nil
+               if let sDate = startTime, let eDate = endTime {
+                   return "\(sDate) - \(eDate)"
+               }else{
+                   return nil
+               }
+               
+               
+           }
+           
+           let startTime: String? = staringTime[6] ?? nil
+           let endTime: String? = endingTime[6] ?? nil
+           if let sDate = startTime, let eDate = endTime {
+               return "\(sDate) - \(eDate)"
+           }else{
+               return nil
+           }
+           
+
+           
+       }
+    
  
     func  getCurrentStartAndEndDate(staringTime: [String?], endingTime: [String?]) -> [Date?] {
         
+        if staringTime.count < 1 {
+            
+            return [nil, nil]
+        }
         
         let date = Date()
         let formatter = DateFormatter()
@@ -256,7 +349,7 @@ class SiteDetailViewController: UIViewController, CLLocationManagerDelegate, UNU
 
     func sendNotification(message: String) {
         let notificationContent = UNMutableNotificationContent()
-        notificationContent.title = "Nation Wide"
+        notificationContent.title = "Nationwide"
         notificationContent.body = message
         notificationContent.badge = NSNumber(value: 3)
         
@@ -350,7 +443,7 @@ class SiteDetailViewController: UIViewController, CLLocationManagerDelegate, UNU
                 self.state.text = st.job?.poc_state
                 self.zipCode.text = st.job?.poc_zip
                 self.siteName.text = st.job?.site_name
-                self.lblShiftTiming.text = st.job?.shift
+                self.lblShiftTiming.text = self.getCurrentShiftTime(staringTime: st.starting_time ?? [nil], endingTime: st.ending_time ?? [nil]) ?? "00:00 - 00:00"
                 self.pocName.text = st.job?.person
                 self.pocCellNumber.text = st.job?.poc_cell_no
             } else {
@@ -373,6 +466,7 @@ class SiteDetailViewController: UIViewController, CLLocationManagerDelegate, UNU
             
             self.navigationItem.title = self.siteDetail?.job?.company_name ?? ""
             let notificationBarButton = UIBarButtonItem(image: UIImage(systemName: "bell.fill"), style: .done, target: self, action: #selector(self.notificationButtonPressed))
+            notificationBarButton.tintColor = UIColor(hexString: "#CD4F4A")
             self.navigationItem.rightBarButtonItem  = notificationBarButton
             
             let sideMenuBarButton = UIBarButtonItem(image: UIImage(systemName: "line.horizontal.3"), style: .done, target: self, action: #selector(self.sideMenuButtonPressed))
@@ -390,6 +484,34 @@ class SiteDetailViewController: UIViewController, CLLocationManagerDelegate, UNU
         
     }
 
+    
+    func downloadFile(url: URL, fileName: String?) {
+        
+        let documentDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+        let dataPath = documentDirectory.appendingPathComponent("Nationwide")
+        let fileExist = FileManager().fileExists(atPath: dataPath.path)
+        
+        
+        
+        let fileURL = url
+        let downloadTask = URLSession.shared.downloadTask(with: fileURL) { (location, response, error) in
+            guard let location = location, error == nil else { return }
+
+            do {
+
+                let fileManager = FileManager.default
+                let documentsDirectory = try fileManager.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
+                let destinationURL = documentsDirectory.appendingPathComponent(fileName ?? "nationwide.pdf")
+                try fileManager.moveItem(at: location, to: destinationURL)
+                self.showErrorAlert(errorMessage: "File downloaded successfully.")
+
+            } catch {
+                self.showErrorAlert(errorMessage: "File downloaded already exist.")
+
+            }
+        }
+        downloadTask.resume()
+    }
     
     
     func downloadPDF(url: URL) {
@@ -571,9 +693,10 @@ class SiteDetailViewController: UIViewController, CLLocationManagerDelegate, UNU
         
         if let workOrderURL = self.siteDetail?.job?.work_order_url {
             
+            let theFileName = (workOrderURL as NSString).lastPathComponent
+
             let url: URL = URL(string: workOrderURL)!
-//            self.storeAndShare(withURLString: workOrderURL)
-            self.downloadPDF(url: url)
+            self.downloadFile(url: url, fileName: theFileName)
 
         }
         
